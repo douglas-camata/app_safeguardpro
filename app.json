@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "SafeGuardPro",
+    "name": "Safe Guard Pro (Controle de EPIs)",
     "slug": "SafeGuardPro",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -21,10 +21,17 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.douglas.camata.SafeGuardPro"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "440deb67-2545-45fd-9e33-8f30871b9efe"
+      }
+    },
+    "owner": "douglas.camata"
   }
 }

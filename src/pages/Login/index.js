@@ -1,19 +1,36 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native'
 import * as Animar from 'react-native-animatable'
 import { Picker } from '@react-native-picker/picker';
+import { Checkbox } from 'expo-checkbox'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { corBranco, meusEstilos } from "../../style/MeusEstilos"
+import { endWS } from "../../Config";
 
 const Login = ({ navigation }) => {
     const [tipoAcesso, setTipoAcesso] = useState('supervisor')
     const [usuario, setUsuario] = useState('supervisor')
     const [senha, setSenha] = useState('1')
     const [mensagemLogin, setMensagemLogin] = useState('')
+    const [permanecerConectado, setPermanecerConectado] = useState(false);
+
+    const verificarLoginRealizado = async () => {
+        let dadosLogado = await AsyncStorage.getItem('UsuLogado');
+        if (dadosLogado) {
+            dadosLogado = JSON.parse(dadosLogado);
+            if (dadosLogado.permanecerConectado) 
+                navigation.navigate('MenuNavegacao', { tipo_usuario: dadosLogado.tipoAcesso })
+        }
+    }
+
+    useEffect(() => {
+        verificarLoginRealizado();
+    }, []);
 
     const botaoEntrar = async () => {
         try {
             // URL do endpoint da API de Login
-            const resposta = await fetch('http://192.168.0.114:5000/colaboradores/login', {
+            const resposta = await fetch(`${endWS}/colaboradores/login`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body : JSON.stringify({
@@ -30,8 +47,16 @@ const Login = ({ navigation }) => {
             const json = await resposta.json()
             if (json.length == 0) 
                 setMensagemLogin('Usuário e/ou senha não encontrado')
-            else
+            else {
+                await AsyncStorage.setItem('UsuLogado', JSON.stringify({
+                    usuario: usuario,
+                    nome: json[0].nome,
+                    tipoAcesso: tipoAcesso,
+                    permanecerConectado: permanecerConectado,
+                    id_usuario : json[0].id_colaborador,
+                }));
                 navigation.navigate('MenuNavegacao', {tipo_usuario: tipoAcesso, nome: json.nome})
+            }
 
         } catch (error) {
             console.error('Erro ao realizar o login:', error)
@@ -72,6 +97,10 @@ const Login = ({ navigation }) => {
                     secureTextEntry={true} 
                     value={senha}
                     onChangeText={setSenha}/>
+                <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 15 }}>
+                    <Checkbox value={permanecerConectado} onValueChange={setPermanecerConectado} />
+                    <Text> Permanecer conectado</Text>
+                </View>
                 <TouchableOpacity style={meusEstilos.botao}
                     onPress={botaoEntrar}>
                     <Text style={meusEstilos.textoBotao}> Acessar </Text>

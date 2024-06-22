@@ -4,13 +4,15 @@ import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, TextInput } 
 import { Picker } from '@react-native-picker/picker';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { corBorda, corBranco, corPrincipal, meusEstilos } from '../../style/MeusEstilos';
+import { endWS } from '../../Config';
 
 const ConsColaboradores = ({ navigation }) => {
     const [dadosLista, setDadosLista] = useState([]);
     const [txtPesquisa, setTxtPesquisa] = useState('');
     const [ordenacao, setOrdenacao] = useState('nome');
-    const [nrProdutos, setNrProdutos] = useState(0)
+    const [nrColaboradores, setNrColaboradores] = useState(0)
 
     const isFocused = useIsFocused()
 
@@ -20,7 +22,7 @@ const ConsColaboradores = ({ navigation }) => {
             return
         }
         try {
-            const response = await fetch(`http://192.168.0.114:5000/colaboradores/colaborador/${txtPesquisa}`);
+            const response = await fetch(`${endWS}/colaboradores/colaborador/${txtPesquisa}`);
             const dados = await response.json();
 
             if (ordenacao === 'nome') {
@@ -28,23 +30,41 @@ const ConsColaboradores = ({ navigation }) => {
             }
             //console.log(dados)
             setDadosLista(dados);
-            setNrProdutos(dados.length);
+            setNrColaboradores(dados.length);
 
         } catch (error) {
             console.error('Erro ao buscar dados:', error);
         }
     };
 
+    const vincularEPI = async (item) => {
+        await AsyncStorage.setItem('ColaboradorSelecionado',
+            JSON.stringify({
+                id_colaborador: item.id_colaborador,
+                nome: item.nome
+            })
+        )
+        navigation.navigate("VincularEPI")
+    }
+
     const exibirItemLista = ({ item }) => {
         return (
             <TouchableOpacity style={meusEstilos.itemLista}
-                onPress={() => navigation.navigate('CadColaborador', { Alterar: item })}
+                onPress={() => vincularEPI(item)}
             >
                 <View style={meusEstilos.textContainer}>
                     <Text style={meusEstilos.NomeLista}>{item.nome}</Text>
                     <Text>{item.cargo}</Text>
                     <Text>{item.setor}</Text>
                 </View>
+                <TouchableOpacity
+                    onPress={() => vincularEPI(item)}>
+                    <MaterialIcons name="link" size={24} color={corPrincipal} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('CadColaborador', { Alterar: item })}>
+                    <MaterialIcons name="edit" size={24} color={corPrincipal} />
+                </TouchableOpacity>
                 <TouchableOpacity onPress={() => botaoExcluirProduto(item.id_colaborador)}>
                     <MaterialIcons name="delete" size={24} color={corPrincipal} />
                 </TouchableOpacity>
@@ -54,7 +74,7 @@ const ConsColaboradores = ({ navigation }) => {
 
     const botaoExcluirProduto = async (id) => {
         try {
-            const resposta = await fetch(`http://192.168.0.114:5000/colaboradores/colaborador/${id}`,
+            const resposta = await fetch(`${endWS}/colaboradores/colaborador/${id}`,
                 { method: 'DELETE' })
             if (resposta.ok)
                 buscarDadosAPI()
@@ -101,7 +121,7 @@ const ConsColaboradores = ({ navigation }) => {
             <View style={[meusEstilos.conteudoCorpo, { paddingHorizontal: 0 }]}>
                 <View style={meusEstilos.tituloLista}>
                     <Text style={{ fontSize: 18, fontWeight: 'bold', color: corPrincipal }}>
-                        Colaboradores listados {nrProdutos}</Text>
+                        {nrColaboradores} Colaboradores listados </Text>
                     <TouchableOpacity style={meusEstilos.botaoIcone}
                         onPress={() => navigation.navigate('CadColaborador')}>
                         <MaterialIcons name="add" size={24} color={corPrincipal} />

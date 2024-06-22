@@ -5,6 +5,7 @@ import { Picker } from '@react-native-picker/picker';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
 import { corBorda, corBranco, corPrincipal, meusEstilos } from '../../style/MeusEstilos';
+import { endWS } from '../../Config';
 
 const ConsEPIs = ({ navigation }) => {
     const [dadosLista, setDadosLista] = useState([]);
@@ -20,7 +21,7 @@ const ConsEPIs = ({ navigation }) => {
             return
         }
         try {
-            const response = await fetch(`http://192.168.0.114:5000/epis/epi/${txtPesquisa}`);
+            const response = await fetch(`${endWS}/epis/epis/${txtPesquisa}`);
             const dados = await response.json();
 
             if (ordenacao == 'nome') {
@@ -47,6 +48,10 @@ const ConsEPIs = ({ navigation }) => {
                     <Text>Validade: {item.validade} dias</Text>
                     <Text>{item.categoria}</Text>
                 </View>
+                <TouchableOpacity
+                    onPress={() => navigation.navigate('CadEPI', { Alterar: item })}>
+                    <MaterialIcons name="edit" size={24} color={corPrincipal} />
+                </TouchableOpacity>
                 <TouchableOpacity onPress={() => botaoExcluirProduto(item.id_epi)}>
                     <MaterialIcons name="delete" size={24} color={corPrincipal} />
                 </TouchableOpacity>
@@ -56,7 +61,7 @@ const ConsEPIs = ({ navigation }) => {
 
     const botaoExcluirProduto = async (id) => {
         try {
-            const resposta = await fetch(`http://192.168.0.114:5000/epis/epi/${id}`,
+            const resposta = await fetch(`${endWS}/epis/epi/${id}`,
                 { method: 'DELETE' })
             if (resposta.ok)
                 buscarDadosAPI()
@@ -105,7 +110,7 @@ const ConsEPIs = ({ navigation }) => {
             <View style={[meusEstilos.conteudoCorpo, { paddingHorizontal: 0 }]}>
                 <View style={meusEstilos.tituloLista}>
                     <Text style={{ fontSize: 18, fontWeight: 'bold', color: corPrincipal }}>
-                        EPI's listados {nrItens}</Text>
+                        {nrItens} EPI's listados </Text>
                     <TouchableOpacity style={meusEstilos.botaoIcone}
                         onPress={() => navigation.navigate('CadEPI')}>
                         <MaterialIcons name="add" size={24} color={corPrincipal} />

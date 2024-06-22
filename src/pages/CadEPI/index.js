@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, Image, StyleSheet } from 'react-native';
 import { corBranco, meusEstilos } from '../../style/MeusEstilos';
+import {endWS} from '../../Config'
 
 const CadEPI = ({ navigation, route }) => {
     const [inputNome, setInputNome] = useState('')
@@ -30,11 +31,11 @@ const CadEPI = ({ navigation, route }) => {
     const botaoSalvar = async () => {
         try {
             //Criando variável para apontar qual endpoint deve ir
-            let endpoint = 'http://192.168.0.114:5000/epis/epi'
+            let endpoint = `${endWS}/epis/epi`
             let metodo = 'POST'
 
             if (route.params && route.params.Alterar) {
-                endpoint = `http://192.168.0.114:5000/epis/epi/${route.params.Alterar.id_epi}`
+                endpoint = `${endWS}/epis/epi/${route.params.Alterar.id_epi}`
                 metodo = 'PUT'
             }
             //Endereço do endpoint do POST

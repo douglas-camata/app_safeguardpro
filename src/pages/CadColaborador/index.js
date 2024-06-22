@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, Image, StyleSheet, ScrollView } from 'react-native';
 import { corBranco, meusEstilos } from '../../style/MeusEstilos';
 import { Picker } from '@react-native-picker/picker';
+import {endWS} from '../../Config'
 
 const CadColaborador = ({ navigation, route }) => {
     const [inputNome, setInputNome] = useState('')
@@ -49,36 +50,17 @@ const CadColaborador = ({ navigation, route }) => {
         }, [route.params]
     )
 
-    useEffect(() => {
-        console.log(inputCargo);
-    }, [inputCargo]);   
-
     const botaoSalvarProduto = async () => {
         try {
             //Criando variável para apontar qual endpoint deve ir
-            let endpoint = 'http://192.168.0.114:5000/colaboradores/colaborador'
+            let endpoint = `${endWS}/colaboradores/colaborador`
             let metodo = 'POST'
 
             if (route.params && route.params.Alterar) {
-                endpoint = `http://192.168.0.114:5000/colaboradores/colaborador/${route.params.Alterar.id_colaborador}`
+                endpoint = `${endWS}/colaboradores/colaborador/${route.params.Alterar.id_colaborador}`
                 metodo = 'PUT'
             }
 
-            console.log(JSON.stringify({
-                nome: inputNome,
-                email: inputEmail,
-                senha: inputSenha,
-                cargo: inputCargo,
-                setor: inputSetor,
-                cpf: inputCPF,
-                cep: inputCEP,
-                endereco: inputEndereco,
-                nr: inputNr,
-                bairro: inputBairro,
-                cidade: inputCidade,
-                estado: inputEstado
-            }))
-            console.log(endpoint);
             //Endereço do endpoint do POST
             const resposta = await fetch(endpoint,
                 {
