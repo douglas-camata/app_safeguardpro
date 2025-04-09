@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useIsFocused } from '@react-navigation/native';
@@ -15,26 +15,31 @@ const ConsEPIs = ({ navigation }) => {
 
     const isFocused = useIsFocused()
 
-    const buscarDadosAPI = async () => {
+    const buscarDadosAPI = () => {
         if (txtPesquisa == '') {
             setDadosLista([])
             return
         }
-        try {
-            const response = await fetch(`${endWS}/epis/epis/${txtPesquisa}`);
-            const dados = await response.json();
-
-            if (ordenacao == 'nome') {
-                dados.sort((a, b) => a.nome_epi.localeCompare(b.nome_epi));
-            } else if (ordenacao == 'validade') {
-                dados.sort((a, b) => a.validade - b.validade);
-            }
-            setDadosLista(dados);
-            setNrItens(dados.length);
-
-        } catch (error) {
-            console.error('Erro ao buscar dados:', error);
-        }
+        fetch(`${endWS}/epis/epis/${txtPesquisa}`)
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status == 404)
+                        throw new Error(`404. API não encontrada (${response.url})`)
+                    else if (response.status == 500)
+                        throw new Error(`500. Erro interno na API (${response.url})`)
+                }
+                return response.json();
+            })
+            .then(dados => {
+                if (ordenacao == 'nome') {
+                    dados.sort((a, b) => a.nome_epi.localeCompare(b.nome_epi));
+                } else if (ordenacao == 'validade') {
+                    dados.sort((a, b) => a.validade - b.validade);
+                }
+                setDadosLista(dados);
+                setNrItens(dados.length);
+            })
+            .catch(error => alert('Erro ao buscar dados: ' + error))
     };
 
     const exibirItemLista = ({ item }) => {

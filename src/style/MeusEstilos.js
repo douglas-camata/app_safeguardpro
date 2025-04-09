@@ -27,7 +27,7 @@ const meusEstilos = StyleSheet.create({
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 40,        
+        marginTop: 40,
         borderColor: corBranco,
         borderWidth: 2
     },
@@ -84,6 +84,44 @@ const meusEstilos = StyleSheet.create({
         height: 50,
         borderRadius: 5,
         marginRight: 10,
+    },
+    controles: {
+        flexDirection: 'row',
+        marginBottom: 10,
+        marginHorizontal: 10,
+        alignItems: 'center',
+        height: 50
+    },
+    tituloLista: {
+        flexDirection: 'row',
+        paddingHorizontal: 10,
+        paddingBottom: 10,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderBottomWidth: 1,
+        borderBottomColor: corBorda,
+    },
+    textContainer: {
+        flex: 1,
+    },
+    preco: {
+        fontSize: 18,
+    },
+    NomeLista: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: corPrincipal
+    },
+    inputCad: {
+        marginBottom: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 5,
+        padding: 10,
+        backgroundColor: corBranco
+    },
+    labelControle: {
+        color: corBranco
     },
     controles: {
         flexDirection: 'row',

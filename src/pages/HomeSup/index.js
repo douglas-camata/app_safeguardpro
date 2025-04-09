@@ -56,33 +56,29 @@ const Home = ({ navigation }) => {
 
 
     return (
-        <View>
+        <View style={{flex:1}}>
             <Animar.View animation='fadeInDown' style={styles.logo}>
                 <Image source={require('../../assets/logo.png')}
                     animation='flipInY'
-                    style={{ height: 80 }}
+                    style={{ height: 80 }} 
                     resizeMode="contain" />
             </Animar.View>
             <Animar.View animation='fadeInLeft' delay={500} style={styles.conteudo}>
-                <View>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                        <View>
-                            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Supervisor:</Text>
-                            <Text style={[meusEstilos.NomeLista, { fontSize: 20 }]}>{nomeUsuario}</Text>
-                        </View>
-                        <MaterialIcons name='logout' size={25} onPress={botaoLogout} />
-                    </View>
-
-                    <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>EPI's próximas ao vencimento:</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
                     <View>
-                        <FlatList
-                            data={dadosEPIsVencendo}
-                            renderItem={exibirItemLista}
-                            keyExtractor={(item) => item.id_vinculacao.toString()}
-                        />
+                        <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Supervisor:</Text>
+                        <Text style={[meusEstilos.NomeLista, { fontSize: 20 }]}>{nomeUsuario}</Text>
                     </View>
-                    
+                    <MaterialIcons name='logout' size={25} onPress={botaoLogout} />
                 </View>
+
+                <Text style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 16 }}>EPI's próximas ao vencimento:</Text>
+                
+                    <FlatList
+                        data={dadosEPIsVencendo}
+                        renderItem={exibirItemLista}
+                        keyExtractor={(item) => item.id_vinculacao.toString()}
+                    />               
 
             </Animar.View>
         </View>
@@ -98,6 +94,7 @@ const styles = StyleSheet.create({
     },
     conteudo: {
         padding: 10,
+        marginBottom: 20
     },
     itemEPI: {
         flexDirection:'row',

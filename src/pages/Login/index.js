@@ -27,42 +27,49 @@ const Login = ({ navigation }) => {
         verificarLoginRealizado();
     }, []);
 
-    const botaoEntrar = async () => {
-        try {
-            // URL do endpoint da API de Login
-            const resposta = await fetch(`${endWS}/colaboradores/login`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body : JSON.stringify({
-                    email: usuario,
-                    senha: senha,
-                    cargo: tipoAcesso
-                })
+    const botaoEntrar = () => {
+        fetch(`${endWS}/colaboradores/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: usuario,
+                senha: senha,
+                cargo: tipoAcesso
             })
+        })
+        .then(resposta => {
             if (!resposta.ok) {
-                setMensagemLogin('Usuário e/ou senha não encontrado')
-                return
+                if (resposta.status == 404)
+                    throw new Error(`404. API não encontrada (${resposta.url})`)
+                else if (resposta.status == 500)
+                    throw new Error(`500. Erro interno na API (${resposta.url})`)
             }
-
-            const json = await resposta.json()
-            if (json.length == 0) 
-                setMensagemLogin('Usuário e/ou senha não encontrado')
-            else {
-                await AsyncStorage.setItem('UsuLogado', JSON.stringify({
+            return resposta.json();
+        })
+        .then(json => {
+            if (json.length === 0) {
+                setMensagemLogin('Usuário e/ou senha não encontrado');
+            } else {
+                AsyncStorage.setItem('UsuLogado', JSON.stringify({
                     usuario: usuario,
                     nome: json[0].nome,
                     tipoAcesso: tipoAcesso,
                     permanecerConectado: permanecerConectado,
-                    id_usuario : json[0].id_colaborador,
-                }));
-                navigation.navigate('MenuNavegacao', {tipo_usuario: tipoAcesso, nome: json.nome})
+                    id_usuario: json[0].id_colaborador,
+                })).then(() => {
+                    navigation.navigate('MenuNavegacao', { tipo_usuario: tipoAcesso, nome: json.nome });
+                }).catch(error => {
+                    console.error('Erro ao salvar no AsyncStorage:', error);
+                    setMensagemLogin('Erro ao realizar o login: ' + error);
+                });
             }
-
-        } catch (error) {
-            console.error('Erro ao realizar o login:', error)
-            setMensagemLogin('Erro ao realizar o login:' + error)
-        }
-    }
+        })
+        .catch(error => {
+            console.error('Erro ao realizar o login:', error);
+            setMensagemLogin('Erro ao realizar o login: ' + error);
+        });
+    };
+    
 
     return (
         <View style={meusEstilos.conteudoHeader}>
